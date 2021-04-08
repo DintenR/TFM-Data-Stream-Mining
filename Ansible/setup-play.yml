@@ -1,0 +1,52 @@
+- hosts: localhost
+  name: Setup Infrastructure and Provision Environment
+  remote_user: ec2-user
+  gather_facts: False
+
+  tasks:
+    - include_vars: config.yaml
+
+    - name: Create ec2 instances
+      ec2:
+        key_name: "{{ aws_ssh_key }}"
+        group: "{{ security_group }}"
+        instance_type: "{{ instance_type }}"
+        image: "{{ ami_id }}"
+        wait: true
+        exact_count: "{{ instance_count }}"
+        region: "{{ region }}"
+        zone: "{{ zone }}"
+        count_tag:
+          managed_by: ansible
+          name: "{{ instance_tag }}"
+        instance_tags:
+          managed_by: ansible
+          name: "{{ instance_tag }}"
+      register: ec2
+
+    - name: Get master node private ip
+      set_fact:
+        master_node: "{{ ec2.instances.0.private_ip }}"
+
+    - name: Write SSH config file
+      shell: |
+        echo "Host worker{{ item_idx }}" >> ssh_config
+        echo "   User ec2-user" >> ssh_config
+        echo "   Hostname {{ item.public_ip }} " >> ssh_config
+        echo >> ssh_config
+      loop: "{{ ec2.instances }}"
+      loop_control:
+        index_var: item_idx
+
+    - name: Add all instance public IPs to host group
+      add_host: hostname={{ item.public_dns_name }} groups=aws_ec2
+      loop: "{{ ec2.instances }}"
+
+    - name: Wait for SSH to come up
+      delegate_to: "{{ item.public_dns_name }}"
+      wait_for_connection:
+        delay: 60
+        timeout: 320
+      loop: "{{ ec2.instances }}"
+
+- import_playbook: environment-play.yml

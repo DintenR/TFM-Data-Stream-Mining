@@ -1,0 +1,55 @@
+- name: Setup environment for experiment
+  hosts: aws_ec2
+  remote_user: ec2-user
+
+  tasks:
+    - include_vars: config.yaml
+    - name: Install the latest version of python
+      yum:
+        name: python3
+        state: latest
+      become: true
+      
+    - name: Install the latest version of java
+      yum:
+        name: java
+        state: latest
+      become: true
+
+    - name: Install virtualenv
+      pip:
+        executable: "pip{{python.version}}"
+        name: virtualenv
+      become: true
+
+    - name: Copy requirements.txt
+      copy:
+        src: requirements.txt
+        dest: /home/ec2-user/requirements.txt
+    
+    - name: Copy models directory
+      copy:
+        src: ../models
+        dest: /home/ec2-user
+
+    - name: Copy scripts directory
+      copy:
+        src: ../scripts
+        dest: /home/ec2-user
+
+    - name: Install experiment python dependencies
+      pip:
+        requirements: /home/ec2-user/requirements.txt
+        executable: "pip{{python.version}}"
+      become: true
+
+    - name: Extract apache platform into /home/ec2-user/
+      ansible.builtin.unarchive:
+        src: ~/Escritorio/repositorio/apache.tar.gz
+        dest: /home/ec2-user/
+
+    - name: Extract spark into /home/ec2-user
+      ansible.builtin.unarchive:
+        src: https://ftp.cixug.es/apache/spark/spark-3.1.1/spark-3.1.1-bin-hadoop2.7.tgz
+        dest: /home/ec2-user/
+        remote_src: yes
