@@ -1,0 +1,69 @@
+
+<div id="header" class="container-fluid p-4">
+  <h1 style="text-align: center;">Water pump dashboard</h1>
+</div>
+<div class="container">
+    <div *ngIf="broken==true; else elseBlock" class="row">
+      <div class="col-sm-12">
+        <h1 class="p-3 rounded" style="color: black; background-color: rgba(255, 0, 0, 0.781); text-align: center;">La Bomba de agua ha sufrido una averia</h1>
+      </div>
+    </div>
+  <ng-template #elseBlock>
+    <div class="row">
+      <div class="col-sm-12">
+        <h1 class="p-3 rounded" style="color: black; background-color:rgb(162, 224, 101); text-align: center;">La Bomba de agua funciona correctamente</h1>
+      </div>
+    </div>
+  </ng-template>
+  
+  <div class="row pt-4" >
+    <div class="col-sm-3 align-items-start" style="overflow-y:scroll; height:400px;">
+      <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+        <button *ngFor="let item of lista;let primero = first;let i = index" (click)="cambiaGrafica(i)" [ngClass]="{active:primero}" [attr.data-bs-target]="'#'+item+'-pill'"  class="nav-link" id="{{item}}-tab" data-bs-toggle="pill" type="button" role="tab" [attr.aria-controls]="item+'-pill'" >{{item}}</button>
+        <!-- <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">sensor01</button>
+        <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">sensor02</button>
+        <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">sensor03</button> -->
+      </div>
+    </div>
+    <div class="col-sm-9">
+      <!-- <div class="tab-content" id="v-pills-tabContent">
+        <div *ngFor="let item of lista;let primero = first; let i = index" [ngClass]="{active:primero}" class="tab-pane fade show" id="{{item}}-pill" role="tabpanel" [attr.aria-labelledby]="item+'-tab'"> -->
+          <!-- <apx-chart
+              [series]=sensors[i]
+              [chart]="chart"
+              [dataLabels]="dataLabels"
+              [markers]="markers"
+              [title]="title"
+              [fill]="fill"
+              [yaxis]="yaxis"
+              [xaxis]="xaxis"
+              [tooltip]="tooltip"
+              [autoUpdateSeries]="true"
+    ></apx-chart> -->
+          <div>
+            <canvas id="myChart"></canvas>
+          </div>
+        <!-- </div> -->
+        <!-- <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab"><h2>Aqui va la grafica del sensor01</h2></div>
+        <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab"><h2>Aqui va la grafica del sensor02</h2></div>
+        <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+          <apx-chart
+              [series]="series"
+              [chart]="chart"
+              [dataLabels]="dataLabels"
+              [markers]="markers"
+              [title]="title"
+              [fill]="fill"
+              [yaxis]="yaxis"
+              [xaxis]="xaxis"
+              [tooltip]="tooltip"
+              [autoUpdateSeries]="true"
+    ></apx-chart>
+    </div> -->
+      </div>
+    </div>
+  </div>
+
+  
+  <button (click)="addDataPoint()">Añade</button>
+<router-outlet></router-outlet>
